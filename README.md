@@ -1,6 +1,12 @@
 # ZoidLab Marketplace
 
+**Part of the [ZoidLab platform](https://github.com/256kMagic/zoidlab-foundry) · Live at [marketplace.zoidlab.ai](https://marketplace.zoidlab.ai)**
+
 **Prototype. Package. Deploy AI Agents.** — the agent app store for Nyquest.
+
+> **Access — Nyquest.** Your Nyquest account is your ZoidLab login. Browsing the marketplace is
+> open to everyone; **installing, cloning, and publishing require signing in with Nyquest** (a
+> **Pro or Teams** plan). One `.zoidlab.ai` session is shared across every ZoidLab app.
 
 A marketplace where users browse, test, install, clone, publish, and (soon) deploy
 reusable AI agents across the Nyquest platform. Live at **marketplace.zoidlab.ai**.
