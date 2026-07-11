@@ -1,0 +1,51 @@
+# Local dev for the ZoidLab Marketplace.
+#   docker compose up --build
+# The prototype persists to SQLite (a Docker volume) — simple and portable.
+# Postgres + Redis are declared for the production path; enable with the
+# "full" profile once the backend is pointed at DATABASE_URL.
+services:
+  backend:
+    build: ./backend
+    environment:
+      - BUILDER_SESSION_SECRET=${BUILDER_SESSION_SECRET:-change-me}
+      - ENABLE_MOCK_SANDBOX=${ENABLE_MOCK_SANDBOX:-true}
+      - MARKETPLACE_ADMINS=${MARKETPLACE_ADMINS:-}
+      - DATA_DIR=/data
+    volumes:
+      - marketplace_data:/data
+    ports:
+      - "8300:8300"
+
+  frontend:
+    build: ./frontend
+    environment:
+      - MARKETPLACE_API_URL=http://backend:8300
+      - BUILDER_SESSION_SECRET=${BUILDER_SESSION_SECRET:-change-me}
+      - NYQUEST_API=${NYQUEST_API:-https://api.nyquest.ai}
+      - SESSION_COOKIE_DOMAIN=${SESSION_COOKIE_DOMAIN:-.zoidlab.ai}
+    ports:
+      - "3300:3300"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["full"]
+    environment:
+      - POSTGRES_USER=zoidlab
+      - POSTGRES_PASSWORD=zoidlab
+      - POSTGRES_DB=zoidlab_marketplace
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    profiles: ["full"]
+    ports:
+      - "6379:6379"
+
+volumes:
+  marketplace_data:
+  pg_data:
