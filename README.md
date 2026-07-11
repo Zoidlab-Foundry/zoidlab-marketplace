@@ -1,6 +1,6 @@
 # ZoidLab Marketplace
 
-**Part of the [ZoidLab platform](https://github.com/256kMagic/zoidlab-foundry) · Live at [marketplace.zoidlab.ai](https://marketplace.zoidlab.ai)**
+**Part of the [ZoidLab platform](https://github.com/Zoidlab-Foundry-m/zoidlab-foundry) · Live at [marketplace.zoidlab.ai](https://marketplace.zoidlab.ai)**
 
 **Prototype. Package. Deploy AI Agents.** — the agent app store for Nyquest.
 
