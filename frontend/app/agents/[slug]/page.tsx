@@ -11,9 +11,6 @@ import { useUser } from "../../../lib/useUser";
 
 const TABS = ["Overview", "Capabilities", "Requirements", "Permissions", "Manifest", "Reviews", "Versions"];
 
-function Stars({ v }: { v: number }) {
-  return <span className="text-warn">{"★".repeat(Math.round(v))}<span className="text-line">{"★".repeat(5 - Math.round(v))}</span></span>;
-}
 
 export default function AgentDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -68,8 +65,7 @@ export default function AgentDetail() {
             <span>by {agent.publisher_name}</span><span className="text-line">·</span>
             <span>v{agent.version}</span><span className="text-line">·</span>
             <span className="rounded bg-white/5 px-1.5 py-0.5">{agent.category}</span><span className="text-line">·</span>
-            <span className="flex items-center gap-1"><Stars v={agent.rating_avg} /> {agent.rating_avg.toFixed(1)} ({agent.rating_count})</span><span className="text-line">·</span>
-            <span>{agent.install_count.toLocaleString()} installs</span>
+            <span>by {agent.publisher_name}</span>
           </div>
           <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-dim">{agent.short_description}</p>
           <div className="mt-3"><GovBadges badges={agent.badges} /></div>
@@ -143,8 +139,8 @@ export default function AgentDetail() {
             {tab === "Manifest" && <ManifestViewer manifest={agent.manifest} />}
             {tab === "Reviews" && (
               <div className="rounded-xl border border-dashed border-line p-8 text-center text-[13px] text-faint">
-                <div className="mb-1 text-[15px] text-dim">{agent.rating_avg.toFixed(1)} ★ · {agent.rating_count} ratings</div>
-                Written reviews are coming soon.
+                <div className="mb-1 text-[15px] text-dim">No reviews yet</div>
+                A review system is planned — ratings will appear here once real users submit them.
               </div>
             )}
             {tab === "Versions" && (

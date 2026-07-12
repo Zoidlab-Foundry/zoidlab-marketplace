@@ -2,8 +2,8 @@
 import type { Category } from "../lib/types";
 
 const SORTS = [
+  { v: "newest", label: "Newest" },
   { v: "installs", label: "Most installed" },
-  { v: "rating", label: "Highest rated" },
   { v: "newest", label: "Newest" },
   { v: "name", label: "A–Z" },
 ];

@@ -14,7 +14,7 @@ import database as db
 import manifest as mf
 import sandbox
 import seed
-from auth import owner_of, session
+from auth import owner_of, session, is_pro as auth_is_pro
 
 
 @asynccontextmanager
@@ -30,9 +30,13 @@ app = FastAPI(title="ZoidLab Marketplace API", lifespan=lifespan)
 
 
 def require_owner(request: Request):
+    """Gated actions (install / clone / submit / review) require a signed-in Nyquest
+    Pro user — matches the README. Browsing and sandbox test stay public."""
     o = owner_of(request)
     if not o:
         raise HTTPException(status_code=401, detail="sign_in_required")
+    if not auth_is_pro(request):
+        raise HTTPException(status_code=403, detail="pro_required")
     s = session(request)
     db.upsert_user(o, s.get("email"), s.get("name"))
     return o
@@ -93,8 +97,11 @@ def test_agent(aid: str, body: TestBody, request: Request):
     text = inp if isinstance(inp, str) else (inp.get("customer_message") or inp.get("message") or inp.get("question")
             or inp.get("prompt") or next(iter(inp.values()), "")) if isinstance(inp, dict) else str(inp or "")
     res = sandbox.run(a, text)
-    db.log_run(a["id"], owner_of(request), {"input": inp}, res["output"], "complete",
-               res["latency_ms"], res["cost_estimate"], res["logs"])
+    # Only persist a run row for signed-in users — prevents anonymous callers from
+    # inserting unbounded agent_runs rows.
+    if owner_of(request):
+        db.log_run(a["id"], owner_of(request), {"input": inp}, res["output"], "complete",
+                   res["latency_ms"], res["cost_estimate"], res["logs"])
     return res
 
 

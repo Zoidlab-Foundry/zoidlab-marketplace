@@ -73,7 +73,7 @@ export default function EditAgent() {
           <Field label="Version"><input value={agent.version} onChange={(e) => set("version", e.target.value)} className={inp} /></Field>
           <Field label="Visibility">
             <select value={agent.visibility} onChange={(e) => set("visibility", e.target.value as any)} className={inp}>
-              {["private", "organization", "public", "verified"].map((v) => <option key={v} value={v}>{v}</option>)}
+              {["private", "public", "verified"].map((v) => <option key={v} value={v}>{v}</option>)}
             </select>
           </Field>
         </div>

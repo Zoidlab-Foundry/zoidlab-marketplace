@@ -2,10 +2,6 @@ import Link from "next/link";
 import type { Agent } from "../lib/types";
 import { VisibilityBadge } from "./Badges";
 
-function Stars({ v }: { v: number }) {
-  return <span className="text-warn">{"★".repeat(Math.round(v))}<span className="text-line">{"★".repeat(5 - Math.round(v))}</span></span>;
-}
-
 export default function AgentCard({ agent }: { agent: Agent }) {
   return (
     <Link href={`/agents/${agent.slug}`}
@@ -36,8 +32,7 @@ export default function AgentCard({ agent }: { agent: Agent }) {
       </div>
 
       <div className="mt-auto flex items-center justify-between border-t border-line pt-3 text-[11px] text-faint">
-        <span className="flex items-center gap-1"><Stars v={agent.rating_avg} /> <span className="text-dim">{agent.rating_avg.toFixed(1)}</span></span>
-        <span>{agent.install_count.toLocaleString()} installs</span>
+        <span className="text-dim">{agent.publisher_name}</span>
         <span>v{agent.version}</span>
       </div>
     </Link>

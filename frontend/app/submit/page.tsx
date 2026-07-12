@@ -6,7 +6,6 @@ import { CATEGORIES } from "../../lib/categories";
 
 const VISIBILITIES = [
   { v: "private", label: "Private" },
-  { v: "organization", label: "Organization" },
   { v: "public", label: "Public Marketplace" },
   { v: "verified", label: "Nyquest Verified" },
 ];

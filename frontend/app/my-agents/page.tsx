@@ -5,7 +5,7 @@ import { api } from "../../lib/api";
 import type { Agent } from "../../lib/types";
 import { VisibilityBadge } from "../../components/Badges";
 
-const TABS = ["Installed", "Created", "Drafts", "Submitted", "Private", "Organization"];
+const TABS = ["Installed", "Created", "Drafts", "Submitted", "Private"];
 
 export default function MyAgents() {
   const [data, setData] = useState<{ installed: Agent[]; created: Agent[] } | null>(null);
@@ -27,7 +27,6 @@ export default function MyAgents() {
     Drafts: created.filter((a) => a.status === "draft"),
     Submitted: created.filter((a) => ["pending", "submitted", "rejected"].includes(a.status)),
     Private: created.filter((a) => a.visibility === "private"),
-    Organization: created.filter((a) => a.visibility === "organization"),
   };
   const list = rows[tab];
 
@@ -73,7 +72,7 @@ export default function MyAgents() {
                 {tab !== "Installed"
                   ? <Link href={`/agents/${a.slug}/edit`} className="rounded-md border border-line px-3 py-1.5 text-[12px] text-dim hover:text-ink">Edit</Link>
                   : <>
-                      <a href="https://builder.zoidlab.ai" className="rounded-md border border-line px-3 py-1.5 text-[12px] text-cy hover:bg-white/5">Deploy</a>
+                      <a href="https://builder.zoidlab.ai" target="_blank" rel="noopener" className="rounded-md border border-line px-3 py-1.5 text-[12px] text-cy hover:bg-white/5">Open in Builder ↗</a>
                       <button onClick={() => remove(a)} className="rounded-md border border-line px-3 py-1.5 text-[12px] text-bad hover:bg-bad/10">Remove</button>
                     </>}
               </div>
