@@ -33,6 +33,9 @@ export const api = {
     req<{ ok: boolean }>(`/api/installed-agents/${installId}`, { method: "DELETE" }),
   myAgents: () => req<{ installed: Agent[]; created: Agent[] }>("/api/my-agents"),
   clone: (id: string) => req<{ ok: boolean; agent: Agent }>(`/api/agents/${id}/clone`, { method: "POST" }),
+  reviews: (id: string) => req<{ reviews: any[]; my_review: any; rating_avg: number; rating_count: number }>(`/api/agents/${id}/reviews`),
+  writeReview: (id: string, body: { rating: number; text?: string }) =>
+    req<{ ok: boolean; rating_avg: number; rating_count: number; reviews: any[]; my_review: any }>(`/api/agents/${id}/reviews`, { method: "POST", body: JSON.stringify(body) }),
   create: (draft: any) => req<{ ok: boolean; agent: Agent }>("/api/agents", { method: "POST", body: JSON.stringify(draft) }),
   update: (id: string, draft: any) => req<{ ok: boolean; agent: Agent }>(`/api/agents/${id}`, { method: "PUT", body: JSON.stringify(draft) }),
   submit: (id: string) => req<any>(`/api/agents/${id}/submit`, { method: "POST" }),

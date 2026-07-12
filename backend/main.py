@@ -23,6 +23,7 @@ async def lifespan(app: FastAPI):
     n = seed.run()
     if n:
         print(f"[marketplace] seeded {n} agents")
+    db.normalize_ratings()  # ratings reflect real reviews only (zeroes any seed placeholders)
     yield
 
 
@@ -103,6 +104,33 @@ def test_agent(aid: str, body: TestBody, request: Request):
         db.log_run(a["id"], owner_of(request), {"input": inp}, res["output"], "complete",
                    res["latency_ms"], res["cost_estimate"], res["logs"])
     return res
+
+
+# ---- reviews ------------------------------------------------------------
+class ReviewBody(BaseModel):
+    rating: int
+    text: Optional[str] = None
+
+
+@app.get("/api/agents/{aid}/reviews")
+def agent_reviews(aid: str, request: Request):
+    a = db.get_agent_by_id(aid) or db.get_agent(aid, viewer=owner_of(request))
+    if not a:
+        raise HTTPException(status_code=404, detail="not_found")
+    return {"reviews": db.list_reviews(a["id"]), "my_review": db.my_review(a["id"], owner_of(request)),
+            "rating_avg": a.get("rating_avg", 0), "rating_count": a.get("rating_count", 0)}
+
+
+@app.post("/api/agents/{aid}/reviews")
+def write_review(aid: str, body: ReviewBody, request: Request):
+    owner = require_owner(request)  # Pro sign-in required
+    a = db.get_agent_by_id(aid)
+    if not a:
+        raise HTTPException(status_code=404, detail="not_found")
+    if not (1 <= int(body.rating) <= 5):
+        raise HTTPException(status_code=400, detail="rating_must_be_1_to_5")
+    stats = db.add_review(a["id"], owner, body.rating, body.text)
+    return {"ok": True, **stats, "reviews": db.list_reviews(a["id"]), "my_review": db.my_review(a["id"], owner)}
 
 
 # ---- user actions (auth) ------------------------------------------------

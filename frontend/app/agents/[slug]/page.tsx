@@ -8,6 +8,7 @@ import { GovBadges, VisibilityBadge } from "../../../components/Badges";
 import ManifestViewer from "../../../components/ManifestViewer";
 import SandboxTester from "../../../components/SandboxTester";
 import { useUser } from "../../../lib/useUser";
+import ReviewsTab from "../../../components/ReviewsTab";
 
 const TABS = ["Overview", "Capabilities", "Requirements", "Permissions", "Manifest", "Reviews", "Versions"];
 
@@ -66,6 +67,7 @@ export default function AgentDetail() {
             <span>v{agent.version}</span><span className="text-line">·</span>
             <span className="rounded bg-white/5 px-1.5 py-0.5">{agent.category}</span><span className="text-line">·</span>
             <span>by {agent.publisher_name}</span>
+            {(agent.rating_count ?? 0) > 0 && <><span className="text-line">·</span><span className="text-warn">★ {agent.rating_avg.toFixed(1)}</span><span className="text-faint">({agent.rating_count})</span></>}
           </div>
           <p className="mt-3 max-w-2xl text-[13.5px] leading-relaxed text-dim">{agent.short_description}</p>
           <div className="mt-3"><GovBadges badges={agent.badges} /></div>
@@ -137,12 +139,7 @@ export default function AgentDetail() {
               </div>
             )}
             {tab === "Manifest" && <ManifestViewer manifest={agent.manifest} />}
-            {tab === "Reviews" && (
-              <div className="rounded-xl border border-dashed border-line p-8 text-center text-[13px] text-faint">
-                <div className="mb-1 text-[15px] text-dim">No reviews yet</div>
-                A review system is planned — ratings will appear here once real users submit them.
-              </div>
-            )}
+            {tab === "Reviews" && <ReviewsTab agentId={agent.id} authed={authed} />}
             {tab === "Versions" && (
               <div className="space-y-2">
                 {(agent.versions || []).map((v) => (

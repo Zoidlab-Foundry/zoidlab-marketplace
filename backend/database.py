@@ -376,6 +376,75 @@ def uninstall(iid, owner):
     return True
 
 
+# --- reviews / ratings (real) -----------------------------------------
+def is_installed(aid, user_id):
+    if not user_id:
+        return False
+    with _conn() as c:
+        return bool(c.execute("SELECT 1 FROM installed_agents WHERE user_id=? AND agent_id=? AND status='installed'",
+                              (user_id, aid)).fetchone())
+
+
+def recompute_rating(aid):
+    """Set an agent's rating_avg/rating_count from its REAL reviews (0 when none)."""
+    with _conn() as c:
+        row = c.execute("SELECT COUNT(*) n, AVG(rating) a FROM agent_reviews WHERE agent_id=?", (aid,)).fetchone()
+        cnt = row["n"] or 0
+        avg = round(row["a"], 2) if row["a"] is not None else 0.0
+        c.execute("UPDATE agents SET rating_count=?, rating_avg=?, updated_at=? WHERE id=?", (cnt, avg, now_iso(), aid))
+    return {"rating_avg": avg, "rating_count": cnt}
+
+
+def normalize_ratings():
+    """Recompute every agent's rating from real reviews — zeroes any seeded placeholders."""
+    with _conn() as c:
+        ids = [r["id"] for r in c.execute("SELECT id FROM agents").fetchall()]
+    for aid in ids:
+        recompute_rating(aid)
+    return len(ids)
+
+
+def add_review(aid, user_id, rating, text=None):
+    rating = max(1, min(5, int(rating)))
+    now = now_iso()
+    with _conn() as c:
+        existing = c.execute("SELECT id FROM agent_reviews WHERE agent_id=? AND user_id=?", (aid, user_id)).fetchone()
+        if existing:
+            c.execute("UPDATE agent_reviews SET rating=?, review_text=?, created_at=? WHERE id=?",
+                      (rating, (text or "").strip() or None, now, existing["id"]))
+        else:
+            c.execute("INSERT INTO agent_reviews (id,agent_id,user_id,rating,review_text,created_at) VALUES (?,?,?,?,?,?)",
+                      (new_id("rev"), aid, user_id, rating, (text or "").strip() or None, now))
+    return recompute_rating(aid)
+
+
+def list_reviews(aid, limit=50):
+    with _conn() as c:
+        rows = c.execute(
+            """SELECT r.rating, r.review_text, r.created_at, r.user_id, u.name AS user_name, u.email AS user_email,
+                      (SELECT 1 FROM installed_agents i WHERE i.user_id=r.user_id AND i.agent_id=r.agent_id LIMIT 1) AS installed
+               FROM agent_reviews r LEFT JOIN users u ON u.id=r.user_id
+               WHERE r.agent_id=? ORDER BY r.created_at DESC LIMIT ?""", (aid, limit)).fetchall()
+    out = []
+    for r in rows:
+        d = dict(r)
+        d["verified_install"] = bool(d.pop("installed", None))
+        d["reviewer"] = d.get("user_name") or (str(d.get("user_email") or "user").split("@")[0])
+        d.pop("user_email", None)
+        d.pop("user_name", None)
+        d.pop("user_id", None)
+        out.append(d)
+    return out
+
+
+def my_review(aid, user_id):
+    if not user_id:
+        return None
+    with _conn() as c:
+        r = c.execute("SELECT rating, review_text FROM agent_reviews WHERE agent_id=? AND user_id=?", (aid, user_id)).fetchone()
+    return dict(r) if r else None
+
+
 def my_agents(owner):
     with _conn() as c:
         installed = c.execute(
