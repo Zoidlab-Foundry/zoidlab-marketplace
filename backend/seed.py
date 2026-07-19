@@ -1,6 +1,6 @@
 """Seed the marketplace with 10 fully-specified Nyquest agents. Idempotent:
 skips agents whose slug already exists, so it's safe to run on every boot."""
-import database as db
+import db_pg as db
 import manifest as mf
 
 
@@ -236,6 +236,7 @@ def _baseline(aid, slug):
     h = int(hashlib.sha256(slug.encode()).hexdigest(), 16)
     installs = 40 + (h % 260)
     rating = round(4.3 + (h % 7) / 10.0, 1)  # 4.3–4.9
-    with db._conn() as c:
-        c.execute("UPDATE agents SET install_count=?, rating_avg=?, rating_count=? WHERE id=?",
+    with db.admin_conn() as c:
+        c.execute("UPDATE agents SET install_count=%s, rating_avg=%s, rating_count=%s WHERE id=%s",
                   (installs, min(rating, 5.0), 12 + (h % 90), aid))
+        c.commit()
