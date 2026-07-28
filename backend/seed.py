@@ -52,7 +52,7 @@ SEEDS = [
     ("restaurant-concierge", "Restaurant Concierge", "🍽", "#f4b860", "Restaurant",
      "AI host for reservations, menu questions, and customer support.",
      "A front-of-house concierge that answers menu and dietary questions, handles reservation and event "
-     "inquiries, and hands off cleanly to staff. Designed for the Evo Italian AI concierge deployment.",
+     "inquiries, and hands off cleanly to staff. Demo concierge for a fictional trattoria.",
      ["restaurant", "concierge", "reservations", "customer-support"], NYQUEST, "verified", True,
      [_model("openai", "gpt-5"), _model("anthropic", "claude-sonnet-5")],
      [{"name": "menu_lookup", "type": "database", "required": True},
