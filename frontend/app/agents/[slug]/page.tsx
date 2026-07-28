@@ -73,7 +73,7 @@ export default function AgentDetail() {
           <div className="mt-3"><GovBadges badges={agent.badges} /></div>
         </div>
         <div className="flex shrink-0 flex-col gap-2">
-          <button onClick={() => action("install")} disabled={!!busy}
+          <button data-assist="install-agent" onClick={() => action("install")} disabled={!!busy}
             className="rounded-lg bg-vi px-5 py-2.5 text-[13px] font-semibold text-white hover:opacity-90 disabled:opacity-50">
             {agent.installed ? "Reinstall" : busy === "install" ? "Installing…" : "Install Agent"}
           </button>

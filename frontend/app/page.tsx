@@ -36,7 +36,7 @@ export default function Home() {
           Prototype, package, and deploy reusable AI agents across Nyquest.
         </p>
         <div className="mx-auto mt-7 flex max-w-xl items-center gap-2">
-          <input value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && go()}
+          <input data-assist="search-agents" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === "Enter" && go()}
             placeholder="Search agents by name, task, or category…"
             className="w-full rounded-xl border border-line bg-panel px-4 py-3 text-[14px] text-ink placeholder-faint outline-none focus:border-vi/60" />
           <button onClick={go} className="rounded-xl bg-vi px-5 py-3 text-[14px] font-semibold text-white hover:opacity-90">Search</button>

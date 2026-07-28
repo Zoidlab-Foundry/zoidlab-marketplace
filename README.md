@@ -20,8 +20,10 @@ governance badges and declared permissions up front, no fine print.
 Aligned to the ZoidLab platform standard (same as the Workflow Builder / Foundry):
 
 - **Frontend** — Next.js 15, React 19, TypeScript, TailwindCSS (dark by default)
-- **Backend** — FastAPI (Python), SQLite (Postgres-portable — all access behind
-  `database.py`; JSONB columns stored as JSON text)
+- **Backend** — FastAPI (Python), Postgres with per-tenant FORCE row-level security
+  (all access behind `db_pg.py`; every query runs as the non-superuser `app_rls` role
+  keyed on `app.current_owner`, so tenant isolation is enforced by the database, not by
+  application code)
 - **Auth** — the shared ZoidLab / Nyquest SSO cookie (`zb_session`). Browsing is
   public; install / clone / submit / admin require a signed-in Nyquest user.
 - **Deploy** — systemd + Cloudflare Tunnel on the ZoidLab host (`marketplace-api`
@@ -48,7 +50,9 @@ npm run dev                    # http://localhost:3300
 Or with Docker:
 
 ```bash
-docker compose up --build      # frontend :3300, backend :8300 (SQLite volume)
+docker compose up --build      # frontend :3300, backend :8300
+                               # the backend needs the shared `foundry-infra` Postgres
+                               # (set DATABASE_URL / DATABASE_URL_ADMIN)
 ```
 
 ## Environment
