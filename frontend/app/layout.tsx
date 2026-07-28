@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { AssistantPanel } from "@foundry/ui";
 import MarketplaceNav from "../components/MarketplaceNav";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className="antialiased min-h-screen bg-bg text-ink">
         <MarketplaceNav />
+        <AssistantPanel app="Marketplace" />
         <main className="mx-auto w-full max-w-[1200px] px-5">{children}</main>
         <footer className="mx-auto mt-24 w-full max-w-[1200px] border-t border-line px-5 py-10 text-[12px] text-faint">
           <div className="flex flex-wrap items-center justify-between gap-3">

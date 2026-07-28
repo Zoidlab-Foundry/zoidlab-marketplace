@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const API = process.env.MARKETPLACE_API_URL || "http://127.0.0.1:8300";
 module.exports = {
+  transpilePackages: ["@foundry/ui"],
   reactStrictMode: false,
   // All /api/* calls proxy to the FastAPI backend. SSO route handlers live
   // under /sso/* so they never collide with the proxy.
